@@ -1,0 +1,14 @@
+# Окружение
+venv/
+.env
+
+# Кэш Python
+__pycache__/
+*.py[cod]
+
+# Данные проекта
+vector_db/
+data/*.pdf
+
+# Настройки VS Code
+.vscode/
