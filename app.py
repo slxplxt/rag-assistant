@@ -20,6 +20,10 @@ vector_db, llm, prompt_template = get_rag_sources()
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+if st.button("Очистить историю чата"):
+    st.session_state.messages = []
+    st.rerun()
+
 # Отображение истории сообщений
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
