@@ -9,6 +9,7 @@ __pycache__/
 # Данные проекта
 vector_db/
 data/*.pdf
+data/*.json
 
 # Настройки VS Code
 .vscode/
