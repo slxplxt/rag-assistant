@@ -53,12 +53,6 @@ def evidence_coverage(
 
     return len(intersection) / len(relevant_tokens)
 
-question = "Какой бесплатный лимит действует для переводов в другой банк по номеру карты через сервисы Т-Банка и какая комиссия предусмотрена в прочих случаях?"
-relevant_evidence = [
-      "7.4.1. до 20 000 руб. за расчетный период Бесплатно",
-      "7.4.2. в прочих случаях 1,5%, минимум 30 руб."
-    ]
-
 def is_evidence_found(
         evidence: str,
         retrieved_docs,
@@ -121,12 +115,84 @@ def evaluate_mean_recall_at_k(
     
     return sum(recalls) / len(recalls)
 
+
+def best_evidence_match(evidence: str, retrieved_docs) -> tuple[float, int | None]:
+    best_coverage = 0
+    best_rank = None
+
+    for rank, doc in enumerate(retrieved_docs, start=1):
+        coverage = evidence_coverage(doc.page_content, evidence)
+
+        if coverage > best_coverage:
+            best_coverage = coverage
+            best_rank = rank
+
+    return (best_coverage, best_rank)
+
+def first_relevant_rank(evidence, retrieved_docs, threshold) -> int | None:
+    for rank, doc in enumerate(retrieved_docs, start=1):
+        coverage = evidence_coverage(doc.page_content, evidence)
+        if coverage >= threshold: 
+            return rank
+    return None
+
+def first_full_coverage_rank(relevant_evidence: list[str], retrieved_docs, threshold: float) -> int | None:
+    if not relevant_evidence:
+        return None
+
+    for rank in range(1, len(retrieved_docs) + 1):
+        current_docs = retrieved_docs[:rank]
+        if all(
+            is_evidence_found(evidence, current_docs, threshold)
+            for evidence in relevant_evidence
+        ):
+            return rank
+
+    return None
+
+
 vector_db, llm, prompt = init_rag_system()
 
 with open("data/tbank_rag_eval.json", "r", encoding="utf-8") as f:
     eval_data = json.load(f)
 
-for k in [1, 3, 5]:
+item = eval_data[6]
+
+results = vector_db.similarity_search(query=item["question"], k=5)
+rank = first_full_coverage_rank(item["relevant_evidence"], retrieved_docs=results, threshold=0.8)
+print("First full coverage rank:", rank)
+
+for evidence in item["relevant_evidence"]:
+    rank = first_relevant_rank(
+        evidence,
+        results,
+        threshold=0.8
+    )
+    print(f"Evidence: {evidence}")
+    print(f"First relevant rank: {rank}")
+
+for rank, doc in enumerate(results, start=1):
+    print(f"\nRank {rank}")
+
+    for evidence in item["relevant_evidence"]:
+        coverage = evidence_coverage(doc.page_content, evidence)
+        print(f"Coverage: {coverage:.3f}")
+        print(f"Evidence: {evidence}")
+
+evidence = item["relevant_evidence"][1]
+
+for rank, doc in enumerate(results[:3], start=1):
+    relevant_tokens = tokenize(evidence)
+    retrieved_tokens = tokenize(doc.page_content)
+
+    matched = relevant_tokens & retrieved_tokens
+    missing = relevant_tokens - retrieved_tokens
+
+    print(f"\nRank {rank}")
+    print("Matched:", sorted(matched))
+    print("Missing:", sorted(missing))
+
+'''for k in [1, 3, 5]:
     recall = evaluate_mean_recall_at_k(
         eval_data=eval_data,
         vector_db=vector_db,
@@ -134,3 +200,4 @@ for k in [1, 3, 5]:
         threshold=0.8
     )
     print(f"Recall@{k}: {recall}")
+'''
