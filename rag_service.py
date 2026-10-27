@@ -2,6 +2,11 @@ from pathlib import Path
 
 from schemas import RagResult, Source
 
+class LLMProviderError(RuntimeError):
+    """Ошибка при обращении к LLM-провайдеру."""
+    pass
+
+
 def answer_question(question: str, vector_db, llm, prompt_template, k: int=3) -> RagResult:
     if not question.strip():
         raise ValueError("Пустой вопрос")
@@ -25,7 +30,13 @@ def answer_question(question: str, vector_db, llm, prompt_template, k: int=3) ->
                 )
 
     prompt = prompt_template.format(context=context_text, question=question)
-    response = llm.invoke(prompt)
+    
+    try:
+        response = llm.invoke(prompt)
+    except Exception as exc:
+        raise LLMProviderError(
+            "Не удалось получить ответ от LLM"
+        ) from exc
 
     sources = [
         Source(

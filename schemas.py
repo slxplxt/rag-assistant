@@ -22,3 +22,10 @@ class RagResult(BaseModel):
     answer: str
     status: Literal["answered", "no_context"]
     sources: list[Source] = Field(default_factory=list)
+
+class AskRequest(BaseModel):
+    question: str = Field(
+        min_length=1,
+        max_length=1000,
+        description="Вопрос пользователя по банковскому тарифу"
+    )
