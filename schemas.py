@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import Literal
 
 class EvidenceJudgment(BaseModel):
@@ -29,3 +29,45 @@ class AskRequest(BaseModel):
         max_length=1000,
         description="Вопрос пользователя по банковскому тарифу"
     )
+
+class EvalSample(BaseModel):
+    id: str = Field(min_length=1)
+    question: str = Field(min_length=1)
+
+    answerable: bool
+    expected_answer: str | None
+
+    relevant_pages: list[int]
+    relevant_evidence: list[str]
+
+    category: str
+
+    @model_validator(mode="after")
+    def validate_evidence(self):
+        if self.answerable:
+            if not self.expected_answer:
+                raise ValueError(
+                    "Answerable question must have expected_answer"
+                )
+
+            if not self.relevant_evidence:
+                raise ValueError(
+                    "Answerable question must have relevant_evidence"
+                )
+
+            if not self.relevant_pages:
+                raise ValueError(
+                    "Answerable question must have relevant_pages"
+                )
+        else:
+            if (
+                self.expected_answer is not None
+                or self.relevant_evidence
+                or self.relevant_pages
+            ):
+                raise ValueError(
+                    "Unanswerable question must not contain "
+                    "an answer or evidence"
+                )
+
+        return self
