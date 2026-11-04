@@ -1,0 +1,68 @@
+{
+  "experiment": "ragas_baseline",
+  "timestamp_utc": "2026-10-31T07:57:19.385790+00:00",
+  "ragas_version": "0.4.3",
+  "judge_model": "GigaChat",
+  "total_questions": 7,
+  "evaluated_questions": 7,
+  "summary": {
+    "faithfulness": {
+      "mean": 0.9714285714285714,
+      "scored": 7,
+      "failed": 0
+    },
+    "factual_correctness": {
+      "mean": 0.824,
+      "scored": 5,
+      "failed": 2
+    }
+  },
+  "results": [
+    {
+      "id": "tariff_001",
+      "faithfulness": 1.0,
+      "factual_correctness": 0.89,
+      "errors": {}
+    },
+    {
+      "id": "tariff_002",
+      "faithfulness": 1.0,
+      "factual_correctness": null,
+      "errors": {
+        "factual_correctness": "OutputParserException"
+      }
+    },
+    {
+      "id": "tariff_003",
+      "faithfulness": 1.0,
+      "factual_correctness": 1.0,
+      "errors": {}
+    },
+    {
+      "id": "tariff_004",
+      "faithfulness": 1.0,
+      "factual_correctness": null,
+      "errors": {
+        "factual_correctness": "OutputParserException"
+      }
+    },
+    {
+      "id": "tariff_005",
+      "faithfulness": 1.0,
+      "factual_correctness": 1.0,
+      "errors": {}
+    },
+    {
+      "id": "tariff_006",
+      "faithfulness": 1.0,
+      "factual_correctness": 0.83,
+      "errors": {}
+    },
+    {
+      "id": "tariff_007",
+      "faithfulness": 0.8,
+      "factual_correctness": 0.4,
+      "errors": {}
+    }
+  ]
+}

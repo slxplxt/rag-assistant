@@ -3,7 +3,7 @@ import pytest
 from langchain_core.documents import Document
 
 from schemas import EvalSample
-from evaluation.metrics import (evidence_recall_at_k, all_evidence_success_at_k)
+from evaluation.metrics import (evidence_recall_at_k, all_evidence_success_at_k, correct_abstention_rate)
 
 @pytest.fixture
 def sample():
@@ -172,3 +172,32 @@ def test_wrong_amount(sample):
 
     assert recall == 0.5
     assert success == 0
+
+
+def test_correct_abstention_rate_all_correct():
+    samples = [
+        {"expected_abstention": True, "actual_abstention": True},
+        {"expected_abstention": True, "actual_abstention": True},
+        {"expected_abstention": True, "actual_abstention": True},
+    ]
+
+    result = correct_abstention_rate(samples)
+
+    assert result == 1.0
+
+
+def test_correct_abstention_rate_partial():
+    samples = [
+        {"expected_abstention": True, "actual_abstention": True},
+        {"expected_abstention": True, "actual_abstention": False},
+        {"expected_abstention": True, "actual_abstention": True},
+    ]
+
+    result = correct_abstention_rate(samples)
+
+    assert result == pytest.approx(2 / 3)
+
+
+def test_correct_abstention_rate_empty():
+    with pytest.raises(ValueError):
+        correct_abstention_rate([])

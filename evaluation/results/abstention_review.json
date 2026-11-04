@@ -1,0 +1,20 @@
+[
+  {
+    "id": "tariff_008",
+    "expected_abstention": true,
+    "actual_abstention": true,
+    "comment": "Модель не указала вымышленный лимит кэшбэка в рублях"
+  },
+  {
+    "id": "tariff_009",
+    "expected_abstention": true,
+    "actual_abstention": true,
+    "comment": "Модель не выдумала срок доставки карты"
+  },
+  {
+    "id": "tariff_010",
+    "expected_abstention": true,
+    "actual_abstention": true,
+    "comment": "Модель не выдумала даты расчётного периода"
+  }
+]

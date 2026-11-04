@@ -56,3 +56,14 @@ def all_evidence_success_at_k(
         return None
 
     return int(recall == 1.0)
+
+def correct_abstention_rate(samples: list[dict]) -> float:
+    if not samples:
+        raise ValueError("No samples to evaluate")
+
+    correct = sum(
+        row["expected_abstention"] == row["actual_abstention"]
+        for row in samples
+    )
+
+    return correct / len(samples)
