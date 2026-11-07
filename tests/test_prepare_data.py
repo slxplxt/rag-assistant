@@ -5,7 +5,7 @@ from prepare_data import build_chunks
 
 
 def test_tbank_chunking_is_unchanged():
-    doc = Document(page_content="РЈСЃР»РѕРІРёСЏ С‚Р°СЂРёС„Р°. " * 500,
+    doc = Document(page_content="Условия тарифа." * 500,
                    metadata={"bank": "tbank", "page": 1, "source": "fixture.pdf"})
     splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
         chunk_size=600, chunk_overlap=100,
