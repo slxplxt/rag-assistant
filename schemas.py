@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, field_validator
 from typing import Literal
 
 class EvidenceJudgment(BaseModel):
@@ -20,10 +20,15 @@ class Source(BaseModel):
 
 class RagResult(BaseModel):
     answer: str
-    status: Literal["answered", "no_context"]
+    status: Literal["answered", "no_context", "unsupported"]
     sources: list[Source] = Field(default_factory=list)
 
 class AskRequest(BaseModel):
+    @field_validator("question", mode="before")
+    @classmethod
+    def strip_question(cls, value):
+        return value.strip() if isinstance(value, str) else value
+
     question: str = Field(
         min_length=1,
         max_length=1000,

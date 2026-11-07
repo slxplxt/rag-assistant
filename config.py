@@ -16,7 +16,7 @@ PDF_PATH = resolve_path(
 )
 
 DB_DIR = resolve_path(
-    os.getenv("DB_DIR", "vector_db")
+    os.getenv("DB_DIR", "vector_db_tbank_v1")
 )
 
 EMBEDDING_MODEL = os.getenv(
@@ -25,3 +25,7 @@ EMBEDDING_MODEL = os.getenv(
 
 GIGACHAT_MODEL = os.getenv("GIGACHAT_MODEL", "GigaChat")
 GIGACHAT_CREDENTIALS = os.getenv("GIGACHAT_CREDENTIALS")
+
+PDF_SOURCES = {
+    "tbank": Path(PDF_PATH),
+}

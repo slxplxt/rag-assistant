@@ -15,3 +15,23 @@ data/*.json
 # Настройки VS Code
 .vscode/
 .idea/
+# Local artifacts and secrets
+vector_db*/
+.venv/
+.env.*
+!.env.example
+tmp/
+*.pem
+*.key
+
+# Local exploratory scripts (not part of MVP)
+/experiments/
+/test.py
+/evidence_judge.py
+*.pfx
+*.p12
+*.sqlite3
+
+# Personal notes stay local; publish only the root README
+*.md
+!/README.md

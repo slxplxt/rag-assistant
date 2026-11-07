@@ -2,6 +2,7 @@ from unittest.mock import Mock, patch
 from fastapi.testclient import TestClient
 from main import app
 from rag_service import LLMProviderError
+import pytest
 
 def test_health():
     with patch(
@@ -102,3 +103,21 @@ def test_ask_llm_provider_error():
 
     assert "Connection timeout" not in response.text
     mock_answer.assert_called_once()
+
+
+@pytest.mark.parametrize("question", [" ", "\n\t", "x" * 1001])
+def test_invalid_input_never_calls_service(question):
+    with patch("main.init_rag_system", return_value=(Mock(), Mock(), Mock())):
+        with patch("main.answer_question") as answer:
+            with TestClient(app) as client:
+                assert client.post("/ask", json={"question": question}).status_code == 422
+            answer.assert_not_called()
+
+
+def test_unexpected_error_is_not_exposed():
+    with patch("main.init_rag_system", return_value=(Mock(), Mock(), Mock())):
+        with patch("main.answer_question", side_effect=RuntimeError("SECRET_INTERNAL_DETAIL")):
+            with TestClient(app) as client:
+                response = client.post("/ask", json={"question": "Тариф?"})
+    assert response.status_code == 500
+    assert "SECRET_INTERNAL_DETAIL" not in response.text

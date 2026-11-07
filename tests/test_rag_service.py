@@ -90,6 +90,23 @@ def test_successful_generation():
     )
 
     llm.invoke.assert_called_once_with("Тестовый prompt")
+
+
+@pytest.mark.parametrize("question", ["Стоимость ВТБ?", "Сравни ВТБ и Т-Банк"])
+def test_unsupported_bank_does_not_call_search_or_llm(question):
+    db, llm, prompt = Mock(), Mock(), Mock()
+    result = answer_question(question, db, llm, prompt)
+    assert result.status == "unsupported"
+    assert result.sources == []
+    db.similarity_search.assert_not_called()
+    llm.invoke.assert_not_called()
+
+
+def test_explicit_tbank_uses_bank_filter():
+    db = Mock()
+    db.similarity_search.return_value = []
+    answer_question("Тариф Т-Банка", db, Mock(), Mock())
+    db.similarity_search.assert_called_once_with("Тариф Т-Банка", k=3, filter={"bank": "tbank"})
     
 
 

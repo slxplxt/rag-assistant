@@ -19,7 +19,7 @@ async def lifespan(app: FastAPI):
 
     yield
 
-app = FastAPI(title="Banking RAG Assistant", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="Banking RAG Assistant", version="1.0.0", lifespan=lifespan)
 
 @app.get("/health")
 def health():
@@ -40,11 +40,15 @@ def ask(payload: AskRequest, request: Request):
             k=3
         )
     except LLMProviderError:
-        logger.exception("LLM provider request failed")
+        logger.warning("LLM provider request failed")
         raise HTTPException(
             status_code=502,
             detail="Сервис генерации временно недоступен"
         ) from None
+
+    except Exception:
+        logger.error("RAG request failed")
+        raise HTTPException(status_code=500, detail="Не удалось обработать запрос") from None
 
     return result
             
